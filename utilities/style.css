@@ -1,0 +1,56 @@
+@font-face {
+    font-family: mbv;
+    src: url('mbv.ttf');
+}
+
+* {
+    margin: 0;
+    cursor: not-allowed;
+    /* user-select: none; */
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    background-image: url("paris_space.jpg"); /* The image used */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
+}
+
+#instructions-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    transition: opacity 2s linear;
+}
+
+#instructions {
+    width: 180px;
+    font-family: 'mbv';
+    font-size: 120px;
+    color: deeppink;
+    text-shadow: 0px 0px 10px red;
+}
+
+span {
+    padding: 3px 8px;
+    border-radius: 30px;
+}
+
+.buttonPress {
+    border: 1px solid lime;
+    box-shadow: 0px 0px 20px black;
+    padding: 2px 7px;
+    animation: fade 0.2s ease-in-out;
+}
+
+@keyframes fade {
+    0%   {opacity: 0}
+    100% {opacity: 1}
+}
