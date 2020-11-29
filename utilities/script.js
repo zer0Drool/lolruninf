@@ -234,8 +234,8 @@ function jump(direction) {
         if (direction === 'forward') {
             let mover = spheres[0];
             spheres[0].position.z = spheres[0].position.z - 40000;
-            spheres.shift();
             mover.material = mats[currentPos + 2];
+            spheres.shift();
             spheres.push(mover);
         };
     };
