@@ -1,7 +1,19 @@
 let scene, camera, renderer, light, skyboxGeo, skybox, raycaster, mouse, intersects;
 let forward, backward = null;
 let currentPos = 0;
-let mats = [];
+let mats = {
+    0: null,
+    1: null,
+    2: null,
+    3: null,
+    4: null,
+    5: null,
+    6: null,
+    7: null,
+    8: null,
+    9: null
+};
+// let mats = [];
 let transitioning = false;
 let rotation;
 
@@ -106,8 +118,8 @@ let arrowInfo = [
     [
         // 8
         {
-            position: [300, -800, -1500],
-            rotation: -10,
+            position: [60, -800, -1500],
+            rotation: -7,
         },
         {
             position: [0, -800, 1500],
@@ -116,17 +128,6 @@ let arrowInfo = [
     ],
     [
         // 9
-        {
-            position: [0, -800, -1500],
-            rotation: 0,
-        },
-        {
-            position: [0, -800, 1500],
-            rotation: 180,
-        },
-    ],
-    [
-        // 10
         {
             position: null,
             rotation: null,
@@ -164,34 +165,17 @@ manager.onLoad = function () {
 };
 
 for (let i = 0; i < noOfSpheres; i++) {
-    // let material = createMaterialArray(i);
-    // let texture = new THREE.TextureLoader(manager).load(`${vistas[i]}`);
-    let texture = new THREE.TextureLoader(manager).load(`https://cors-anywhere.herokuapp.com/${vistas[i]}`);
-    let sphereMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
-    mats.push(sphereMaterial);
+
+    axios.get(`https://cors-anywhere.herokuapp.com/${vistas[i]}`)
+    .then((response) => {
+        let texture = new THREE.TextureLoader(manager).load(response.config.url);
+        let sphereMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
+        mats[i] = sphereMaterial;
+    }, (error) => {
+        console.log(error);
+    });
+
 };
-
-// function keyPress(e) {
-
-//     if (e.code === "KeyA" && !transitioning) {
-//         if (currentPos === names.length - 1) {
-//             return;
-//         } else {
-//             spans[0].classList.add("buttonPress");
-//             currentPos++;
-//             move(names[currentPos]);
-//         };
-//     } else if (e.code === "KeyD" && !transitioning) {
-//         if (currentPos === 0) {
-//             return;
-//         } else {
-//             spans[1].classList.add("buttonPress");
-//             currentPos--;
-//             move(names[currentPos]);
-//         };
-//     };
-
-// };
 
 function positionArrows() {
 
@@ -210,6 +194,8 @@ function positionArrows() {
 function move(direction) {
 
     console.log(currentPos);
+
+    transitioning = true;
 
     for (var i = 0; i < spheres.length; i++) {
         let pos = spheres[i].position;
@@ -231,10 +217,30 @@ function move(direction) {
             700
         )
         .easing(TWEEN.Easing.Quartic.InOut)
-        .start();
+        .start()
     };
 
+    setTimeout(() => {
+        jump(direction);
+    }, 710);
+
     positionArrows();
+
+};
+
+function jump(direction) {
+
+    if (currentPos !== 1 && currentPos !== (noOfSpheres - 2) && currentPos !== (noOfSpheres - 1)) {
+        if (direction === 'forward') {
+            let mover = spheres[0];
+            spheres[0].position.z = spheres[0].position.z - 40000;
+            spheres.shift();
+            mover.material = mats[currentPos + 2];
+            spheres.push(mover);
+        };
+    };
+
+    transitioning = false;
 
 };
 
@@ -295,7 +301,8 @@ function init() {
 
     // SPHERES =====================================================
 
-    for (var i = 0; i < noOfSpheres; i++) {
+    for (var i = 0; i < 4; i++) {
+    // for (var i = 0; i < noOfSpheres; i++) {
 
         let skysphereGeo = new THREE.SphereGeometry(5000, 32, 32);
         let skysphere = new THREE.Mesh(skysphereGeo, mats[i]);
@@ -380,16 +387,20 @@ function init() {
                 if (currentPos === noOfSpheres - 1) {
                     return;
                 } else {
-                    currentPos++;
-                    move('forward');
-                }
+                    if (!transitioning) {
+                        currentPos++;
+                        move('forward');
+                    };
+                };
             } else if (intersects[i].object.parent && intersects[i].object.parent.name === "backward") {
                 if (currentPos === 0) {
                     return;
                 } else {
-                    currentPos--;
-                    move('backward');
-                }
+                    if (!transitioning) {
+                        currentPos--;
+                        move('backward');
+                    };
+                };
             };
         };
 
